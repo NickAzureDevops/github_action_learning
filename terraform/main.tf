@@ -1,7 +1,13 @@
-resource "aws_instance" "test_instance" {
-  ami           = "ami-830c94e3"
-  instance_type = "t2.nano"
+resource "aws_s3_bucket" "b" {
+  bucket = "my-tf-test-bucket"
+
   tags = {
-    Name = "test_instance"
+    Name        = "My bucket"
+    Environment = "Dev"
   }
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.b.id
+  acl    = "private"
 }
