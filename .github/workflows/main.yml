@@ -11,14 +11,7 @@ on:
    - main
    paths:
    - terraform/**
-
-permissions:
-  id-token: write
-  contents: read
-  issues: write
-  pull-requests: write
-
-
+ 
 env:
  # verbosity setting for Terraform logs
  TF_LOG: INFO
