@@ -1,22 +1,23 @@
 name: "Terraform Infrastructure Change Management Pipeline with GitHub Actions"
  
 on:
-  push:
-    branches:
-    - main
-    paths:
-    - terraform/**
-  pull_request:
-    branches:
-    - main
-    paths:
-    - terraform/**
+ push:
+   branches:
+   - main
+   paths:
+   - terraform/**
+ pull_request:
+   branches:
+   - main
+   paths:
+   - terraform/**
 
 permissions:
   id-token: write
   contents: read
   issues: write
   pull-requests: write
+
 
 env:
  # verbosity setting for Terraform logs
