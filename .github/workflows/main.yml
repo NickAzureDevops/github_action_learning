@@ -3,7 +3,7 @@ name: "ci"
 on: 
   push:
     branches:
-    - test2
+      - test2
 
 env:
  # verbosity setting for Terraform logs
