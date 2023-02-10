@@ -1,9 +1,6 @@
 name: "ci"
  
 on: 
-  push:
-    branches:
-    - test2
   pull_request:
     branches: [main]
     types: [opened, synchronize]
