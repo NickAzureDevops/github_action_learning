@@ -27,6 +27,8 @@ jobs:
     defaults:
      run:
        shell: bash
+       working-directory: ./terraform
+
        # We keep Terraform files in the terraform directory.
     env:
       tf_actions_working_dir:  ./terraform
