@@ -28,7 +28,8 @@ jobs:
      run:
        shell: bash
        # We keep Terraform files in the terraform directory.
-       tf_actions_working_dir:  ./terraform
+       env:
+        tf_actions_working_dir:  ./terraform
 
     steps:
       - name: Checkout the repository to the runner
