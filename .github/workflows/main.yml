@@ -25,10 +25,6 @@ jobs:
   terraform:
     name: "deploy"
     runs-on: ubuntu-latest
-    defaults:
-     run:
-       shell: bash
-
        # We keep Terraform files in the terraform directory.
     steps:
       - name: Checkout the repository to the runner
