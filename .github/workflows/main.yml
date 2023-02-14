@@ -19,7 +19,6 @@ env:
  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
  # S3 bucket for the Terraform state
  BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
- tf_actions_working_dir: ./terraform
 
 jobs:
   terraform:
@@ -28,7 +27,7 @@ jobs:
     defaults:
      run:
        shell: bash
-       working-directory: ${{ env.tf_actions_working_dir }}
+       working-directory: ./terraform
 
        # We keep Terraform files in the terraform directory.
     steps:
