@@ -1,6 +1,9 @@
 name: "ci"
  
 on: 
+  push:
+   branches:
+   - NickAzureDevops-patch-1
   pull_request:
     branches: [main]
     types: [opened, synchronize]
