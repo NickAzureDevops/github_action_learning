@@ -1,63 +1,39 @@
-defaults:
-  run:
-    working-directory: ${{ env.tf_actions_working_dir }}
-permissions:
-  pull-requests: write
-steps:
-- uses: actions/checkout@v3
-- uses: hashicorp/setup-terraform@v2
+name: List releases
 
-- name: Terraform fmt
-  id: fmt
-  run: terraform fmt -check
-  continue-on-error: true
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 13 1 */1 *'  # run every month on the first at 13:00
 
-- name: Terraform Init
-  id: init
-  run: terraform init
+jobs:
+  create-list:
+    name: Create list of releases
+    runs-on: ubuntu-latest   
+    steps:      
+      - name: Retrieve releases and generate report
+        env:
+          GH_TOKEN: $
+        run: |
+          releases=$(gh release list -L 40 --exclude-drafts)
+          
+          echo "Overview of last 40 releases" >> $GITHUB_STEP_SUMMARY
+              
+          while IFS= read -r line; do
+              id=$(echo "$line" | cut -d$'\t' -f3)
+              release=$(gh release view $id --json body,name,publishedAt,createdAt,url)
 
-- name: Terraform Validate
-  id: validate
-  run: terraform validate -no-color
+              echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+              name=$(echo $release | jq -r '.name')
+              published=$(echo $release | jq -r '.publishedAt')
+              created=$(echo $release | jq -r '.createdAt')
+              body=$(echo $release | jq -r '.body')
+              url=$(echo $release | jq -r '.url')
 
-- name: Terraform Plan
-  id: plan
-  run: terraform plan -no-color
-  continue-on-error: true
+              echo "# Release: $name"  >> $GITHUB_STEP_SUMMARY
+              echo "Published at $published and created at $created" >> $GITHUB_STEP_SUMMARY    
+              echo $body  >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+              echo "Release URL: $url" >> $GITHUB_STEP_SUMMARY
 
-- uses: actions/github-script@v6
-  if: github.event_name == 'pull_request'
-  env:
-    PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-  with:
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    script: |
-      const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-      #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-      #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-      <details><summary>Validation Output</summary>
-
-      \`\`\`\n
-      ${{ steps.validate.outputs.stdout }}
-      \`\`\`
-
-      </details>
-
-      #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-      <details><summary>Show Plan</summary>
-
-      \`\`\`\n
-      ${process.env.PLAN}
-      \`\`\`
-
-      </details>
-
-      *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
-
-      github.rest.issues.createComment({
-        issue_number: context.issue.number,
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        body: output
-      })
+          done <<< "$releases"
+    
